@@ -13,6 +13,10 @@ out <- prepDocuments(processed$documents, processed$vocab, processed$meta,
 docs <- out$documents
 vocab <- out$vocab
 meta <- out$meta
+
+# density is highly correlated in the sample
+cor(meta[,c("AR","HU","HE","OT","ED")])
+
 # takes 2.5 hours all models converged
 time1 <- Sys.time()
 stm_storage <- data_frame(K = c(25, 50, 75, 100, 125)) %>%
@@ -94,3 +98,12 @@ tm50 <- stm(documents = out$documents,
 # 
 # 
 # plot(kresult)
+
+###  estimate effects 
+
+e50 <- estimateEffect(c(39,38,35,33,31,29,27,22,21,20,19,14,6,7,4,1) ~year + log(population) +
+                  HU + AR + HE + OT + ED + 
+                  pctpeoplelivingbelow150pctfederalpovertylevel, tm50, meta = meta, uncertainty = "Global")
+e25 <- estimateEffect( ~year + log(population) +
+                        HU + AR + HE + OT + ED + 
+                        pctpeoplelivingbelow150pctfederalpovertylevel, tm25, meta = meta, uncertainty = "Global")
