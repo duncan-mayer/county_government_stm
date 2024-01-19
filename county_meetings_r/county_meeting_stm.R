@@ -4,10 +4,20 @@ library("tidyverse")
 
 dfc <- readRDS("county_meetings_stm_dat/df_text_gov_meetings.rds")
 
-processed <- textProcessor(dfc$caption_text_clean, metadata=dfc, ucp = TRUE, removenumbers = TRUE)
 
+processed <- textProcessor(dfc$text_clean, metadata=dfc, ucp = TRUE, removenumbers = TRUE)
+
+# to remove documents dropped in processing 
+dfc <-dfc[-processed$docs.removed,]
+
+length(dfc$channeltype) # number of meetings 
+sum(dfc1$vid_length_min) / 60 # number of hours 
+length(unique(dfc1$fips)) # number of counties in which meetings occur
+
+##
 lthresh <- round(dim(dfc)[1]*.01,0)
 
+### pre proccess and create corpus 
 out <- prepDocuments(processed$documents, processed$vocab, processed$meta,
                      lower.thresh = lthresh)
 docs <- out$documents
@@ -15,7 +25,7 @@ vocab <- out$vocab
 meta <- out$meta
 
 # density is highly correlated in the sample
-cor(meta[,c("AR","HU","HE","OT","ED")])
+cor(meta[,c("AR","HU","HE","OT","ED","fips_density")]) # unadjusted for population - density is highly correlated across sectors 
 
 # takes 2.5 hours all models converged
 time1 <- Sys.time()
